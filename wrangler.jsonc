@@ -12,8 +12,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "kelaas-db",
-      "database_id": "PASTE_D1_DATABASE_ID_HERE",
+      "database_name": "kelaas",
+      "database_id": "6ab6fa69-2332-4985-a83d-9dd9625e2446",
       "migrations_dir": "migrations"
     }
   ],
