@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Copy-Item *)",
+      "PowerShell(cd E:\\\\workers; npx tsc --noEmit 2>&1 | Select-Object -First 30; Write-Output \"EXIT:$LASTEXITCODE\")",
+      "PowerShell(curl.exe -s -i \"http://localhost:8787/api?action=test\" 2>&1 | Select-Object -First 20)",
+      "PowerShell(Start-Sleep -Seconds 4; curl.exe -s \"http://localhost:8787/api?action=test\" 2>&1)",
+      "PowerShell(curl.exe -s -X POST \"http://localhost:8787/api?action=setup\" 2>&1 | Select-Object -First 5)",
+      "PowerShell(cd E:\\\\workers; npx tsc --noEmit 2>&1 | Select-Object -First 10; Write-Output \"TSC_EXIT:$LASTEXITCODE\"; npx wrangler deploy --dry-run --outdir=dist 2>&1 | Select-Object -Last 6)"
+    ]
+  }
+}

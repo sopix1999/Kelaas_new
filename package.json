@@ -1,0 +1,25 @@
+{
+  "name": "kelaas-cf",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KELAAS — Sistem Wali Kelas (migrasi Google Apps Script + PHP → Cloudflare Workers / Hono / D1)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --outdir=dist",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply kelaas-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply kelaas-db --remote",
+    "db:seed": "wrangler d1 execute kelaas-db --local --file=migrations/seed.sql"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240925.0",
+    "@types/bcryptjs": "^2.4.6",
+    "typescript": "^5.6.0",
+    "wrangler": "^3.80.0"
+  }
+}
