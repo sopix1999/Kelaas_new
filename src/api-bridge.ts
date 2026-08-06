@@ -17,10 +17,14 @@ import {
 
 type Env = Record<string, any>;
 
-// ===================== HTTP call helper (server-side, same origin) =====================
+// ===================== HTTP call helper (server-side, in-memory) =====================
+// Workers tidak bisa fetch ke origin sendiri via HTTP → panggil app Hono
+// langsung in-memory lewat binding `__app` (di-set di src/app.ts middleware).
 async function callAction(c: Context, method: string, action: string, params: Record<string, any> = {}, payload?: Record<string, any>): Promise<Record<string, any>> {
-  const db: D1Database = c.env.DB;
-  // Reuse route dispatch via internal fetch ke path /api?action=...
+  const env = c.env as Record<string, any>;
+  if (!env.__app || typeof env.__app.fetch !== 'function') {
+    return { success: false, message: 'Internal bridge tidak tersedia (__app)' };
+  }
   const url = new URL('/api', c.req.url);
   url.searchParams.set('action', action);
   for (const [k, v] of Object.entries(params)) {
@@ -28,7 +32,12 @@ async function callAction(c: Context, method: string, action: string, params: Re
   }
   const init: RequestInit = { method, headers: { 'Content-Type': 'application/json' } };
   if (payload !== undefined) init.body = JSON.stringify(payload);
-  const res = await c.env.self.fetch(url.toString(), init);
+  // Catatan: Hono `app.fetch(request, env, executionCtx)` — urutan argumen
+  // (request, env, executionCtx). Request harus sudah berupa Request object
+  // (bukan string/URL), karena Hono tidak membungkus string sendiri.
+  const request = new Request(url.toString(), init);
+  const fetchFn = env.__app.fetch as (req: Request, env: unknown, executionCtx: unknown) => Promise<Response>;
+  const res = await fetchFn(request, c.env, c.executionCtx);
   try {
     return (await res.json()) as Record<string, any>;
   } catch {
